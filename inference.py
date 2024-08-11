@@ -1,7 +1,5 @@
-
 import os
 import re
-import pandas as pd
 import torch
 from threading import Thread
 from typing import Dict, List
@@ -25,7 +23,6 @@ class Model:
     def __init__(self, **kwargs):
         self.model = None
         self.tokenizer = None
-        self._secrets = kwargs["secrets"]
 
     def load(self):
         self.tokenizer = AutoTokenizer.from_pretrained(
