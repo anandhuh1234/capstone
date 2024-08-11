@@ -12,7 +12,9 @@ class Llama3:
         self.terminators = [self.tokenizer.eos_token_id, self.tokenizer.convert_tokens_to_ids("")]
 
     def generate_text(self, prompt, max_tokens=2048, temperature=0, top_p=0.9, chunk_size=256):
-        # ... (rest of the function)
+        input_ids = self.tokenizer(prompt, return_tensors="pt").input_ids.to(self.device)
+        attention_mask = torch.ones_like(input_ids)
+        generated = []
         for _ in range(0, max_tokens, chunk_size):
             output = self.model.generate(
                 # ... (rest of the generation arguments)
