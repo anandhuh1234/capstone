@@ -11,27 +11,23 @@ class Llama3:
         self.tokenizer.pad_token_id = self.tokenizer.unk_token_id
         self.terminators = [self.tokenizer.eos_token_id, self.tokenizer.convert_tokens_to_ids("")]
 
-    def generate_text(self, prompt, max_tokens=2048, temperature=0.1, top_p=0.9, chunk_size=256):
-        input_ids = self.tokenizer(prompt, return_tensors="pt").input_ids.to(self.device)
-        attention_mask = torch.ones_like(input_ids)
-        generated = []
+    def generate_text(self, prompt, max_tokens=2048, temperature=0, top_p=0.9, chunk_size=256):
+        # ... (rest of the function)
         for _ in range(0, max_tokens, chunk_size):
             output = self.model.generate(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                max_new_tokens=chunk_size,
-                eos_token_id=self.tokenizer.eos_token_id,
-                do_sample=True,
-                temperature=temperature,
-                top_p=top_p
+                # ... (rest of the generation arguments)
             )
-            generated.extend(output[0].tolist())
-            # Print the generated chunk
-            print(self.tokenizer.decode(generated, skip_special_tokens=True))
-            # Update input_ids with generated tokens for next chunk
-            input_ids = input_ids[:, 1:] + torch.tensor(generated[-chunk_size:], device=self.device)
-        return self.tokenizer.decode(generated, skip_special_tokens=True)
-
+            generated_chunk = output[0].tolist()
+            actual_chunk_size = len(generated_chunk)
+    
+            # Handle incomplete chunk (pad if necessary)
+            if actual_chunk_size < chunk_size:
+                generated_chunk += [self.tokenizer.pad_token_id] * (chunk_size - actual_chunk_size)
+    
+            print(self.tokenizer.decode(generated_chunk, skip_special_tokens=True))
+            # Update input_ids with generated tokens
+            input_ids = input_ids[:, 1:] + torch.tensor(generated_chunk, device=self.device)
+        return self.tokenizer.decode(generated, skip_special_tokens=True
 
 
     def get_response(self, query, message_history=[], max_tokens=4096, temperature=0.1, top_p=0.9):
