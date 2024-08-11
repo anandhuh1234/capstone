@@ -1,7 +1,6 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
-
-# v03
+# v04
 class Llama3:
     def __init__(self, model_path):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -31,6 +30,9 @@ class Llama3:
             
             next_token_id = output.sequences[:, -1:]
             generated_ids = torch.cat((generated_ids, next_token_id), dim=-1)
+            
+            # Update the attention mask to account for the new token
+            attention_mask = torch.cat([attention_mask, torch.ones_like(next_token_id)], dim=-1)
             
             next_token = self.tokenizer.decode(next_token_id[0], skip_special_tokens=True)
             yield next_token
