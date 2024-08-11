@@ -15,13 +15,14 @@ class Llama3:
         output = self.model.generate(
             input_ids=input_ids,
             max_new_tokens=max_tokens,
-            eos_token_id=self.terminators,
+            eos_token_id=self.tokenizer.eos_token_id,  # Use tokenizer's eos_token_id directly
             do_sample=True,
             temperature=temperature,
             top_p=top_p,
         )
         generated_text = self.tokenizer.decode(output[0], skip_special_tokens=True)
         return generated_text
+
 
     def get_response(self, query, message_history=[], max_tokens=4096, temperature=0.6, top_p=0.9):
         user_prompt = message_history + [{"role": "user", "content": query}]
